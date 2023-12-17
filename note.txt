@@ -1,0 +1,199 @@
+* GitHub
+	…or create a new repository on the command line
+		echo "# nextjs-twitch" >> README.md
+		git init
+		git add README.md
+		git commit -m "first commit"
+		git branch -M main
+		git remote add origin https://github.com/filezingme/nextjs-twitch.git
+		git push -u origin main
+
+	…or push an existing repository from the command line
+		git remote add origin https://github.com/filezingme/nextjs-twitch.git
+		git branch -M main
+		git push -u origin main
+
+--------------------------------------------------------------------------------------------
+
+- Setup
+	> https://www.codewithantonio.com/courses/b30909d3-bdfb-4b89-9d39-22037a1a199b/chapters/82770ce0-3be4-4367-8145-cdd5c46e7b3b
+	
+	$ npx create-next-app@latest video-twitch [
+		√ Would you like to use TypeScript? ... Yes
+		√ Would you like to use ESLint? ... Yes
+		√ Would you like to use Tailwind CSS? ... Yes
+		√ Would you like to use `src/` directory? ... No
+		√ Would you like to use App Router? (recommended) ... Yes
+		? Would you like to customize the default import alias (@*)? » No
+			> ESLint là một công cụ kiểm tra mã nguồn JavaScript để phát hiện và sửa các lỗi cú pháp, phong cách và logic trong mã nguồn. Nó giúp đảm bảo rằng mã của bạn tuân theo các quy tắc và tiêu chuẩn đã định trước, giúp tăng cường chất lượng mã, dễ bảo trì và chia sẻ giữa các thành viên trong nhóm phát triển.
+				Next.js là một framework React phổ biến được sử dụng để xây dựng ứng dụng web. Khi bạn sử dụng Next.js để phát triển ứng dụng React, bạn có thể tích hợp ESLint để kiểm tra và đảm bảo chất lượng mã nguồn của bạn. ESLint có thể cài đặt và cấu hình cho dự án Next.js của bạn để tự động kiểm tra mã khi bạn phát triển và xây dựng ứng dụng.
+				Việc tích hợp ESLint trong Next.js giúp bạn duy trì mã nguồn sạch sẽ, giảm lỗi và giúp tập trung vào việc phát triển tính năng thay vì lo lắng về các vấn đề liên quan đến chất lượng mã.
+		]	
+		
+	$ npm run dev
+	
+	- Install 'Tailwind CSS IntelliSense' trong vscode
+		> Tailwind CSS IntelliSense cải thiện trải nghiệm phát triển với Tailwind bằng cách cung cấp cho người dùng Visual Studio Code những tính năng nâng cao như tự động hoàn thành, làm nổi bật cú pháp và kiểm tra lỗi.
+		
+	$ npx shadcn-ui@latest init [
+		> ref: https://ui.shadcn.com/docs/installation/next
+		> Lệnh npx shadcn-ui@latest init được sử dụng để khởi tạo một dự án mới sử dụng giao diện người dùng (UI) từ Shadcn. Trong ngữ cảnh này, npx là một công cụ được cài đặt kèm theo Node.js và npm, giúp chạy các lệnh npm mà không cần phải cài đặt gói đó toàn cục. shadcn-ui là tên gói cài đặt, và @latest đảm bảo rằng bạn sử dụng phiên bản mới nhất của gói.
+			Khi bạn chạy lệnh này, nó sẽ thực hiện các bước cài đặt và cấu hình cần thiết để bắt đầu một dự án mới với giao diện người dùng của Shadcn. Thông thường, lệnh init sẽ tự động tạo ra cấu trúc thư mục cần thiết, cài đặt các gói phụ thuộc, và thiết lập các tùy chọn khác để bạn có thể bắt đầu phát triển dự án ngay lập tức.
+			Lưu ý rằng chi tiết cụ thể về cách giao diện người dùng Shadcn được cấu trúc và hoạt động sẽ phụ thuộc vào tài liệu của Shadcn và phiên bản cụ thể mà bạn đang sử dụng. Hãy kiểm tra tài liệu của Shadcn để biết thêm thông tin về việc sử dụng lệnh init và tùy chọn khác có sẵn.
+		
+		√ Would you like to use TypeScript (recommended)? ... yes
+		√ Which style would you like to use? » Default
+		√ Which color would you like to use as base color? » Neutral
+		√ Where is your global CSS file? ... app/globals.css
+		√ Would you like to use CSS variables for colors? ... yes
+		√ Where is your tailwind.config.js located? ...  tailwind.config.ts
+		√ Configure the import alias for components: ... @/components
+		√ Configure the import alias for utils: ... @/lib/utils
+		? Are you using React Server Components? » yes
+		√ Write configuration to components.json. Proceed? ... yes
+		
+		$ npx shadcn-ui@latest add button
+			> https://ui.shadcn.com/docs/components/button
+			> sẽ tạo ra file 'components\ui\button.tsx'
+				- có thể tạo thêm thuộc tính cho nút này, ví dụ:
+					custom: "text-white bg-blue-500"
+				- và trong 'app\page.tsx' gọi thuộc tính vừa thêm:
+					<Button size='lg' variant='custom'>Click me</Button>
+		]
+				
+- Routing Concepts
+	- tạo file 'app\folder\page.tsx' thì sẽ truy cập được bằng 'http://localhost:3000/folder'
+	- hoặc 'app\folder\folder2\page.tsx' thì sẽ truy cập được bằng 'http://localhost:3000/folder/folder2'
+	
+	- dạng API Routing: [
+		- tạo 'app\folder\route.ts' 
+			export function GET() {
+				return Response.json({foo: "bar"});
+			}
+		- thì sẽ truy cập được bằng 'http://localhost:3000/folder', sẽ in ra nội dung:
+			{"foo":"bar"}
+		]
+			
+	- tạo một layout chung cho trang login và register (có thư mục cha và file layout ở trong) [
+		> url sẽ có dạng:
+			http://localhost:3000/auth/login
+			http://localhost:3000/auth/register
+					
+		- tạo 'app\auth\login\page.tsx'
+			const LoginPage = () => {
+				return (
+					<div>
+						Login Page
+					</div>
+				)
+			}
+			export default LoginPage
+			
+		- tạo 'app\auth\register\page.tsx'
+			const RegisterPage = () => {
+				return (
+					<div>
+						Register Page
+					</div>
+				)
+			}
+			export default RegisterPage
+			
+		- tạo 'app\auth\layout.tsx'
+			const AuthLayout = ({children}: {children: React.ReactNode}) => {
+				return (
+					<div className="flex flex-col gap-y-4">
+						<nav className="p-1 bg-red-500 w-500">
+							Auth Navbar
+						</nav>
+						{children}
+					</div>        
+				)
+			}
+			export default AuthLayout
+			
+				> Trong đoạn mã Next.js bạn đã cung cấp, `className` là một thuộc tính của React được sử dụng để đặt các lớp CSS cho phần tử HTML tương ứng. Dưới đây là giải thích các lớp CSS được thêm vào từ `className`:
+				1. `flex flex-col gap-y-4`: Đây là một tổ hợp của các lớp CSS được cung cấp bởi Tailwind CSS, một thư viện CSS utility phổ biến. 
+				   - `flex`: Đặt phần tử trong một container có thuộc tính display: flex, làm cho các phần tử con của nó trở thành các phần tử linh hoạt.
+				   - `flex-col`: Đặt flex-direction thành column, sắp xếp các phần tử con theo chiều dọc.
+				   - `gap-y-4`: Thêm một khoảng cách dọc (theo chiều dọc) giữa các phần tử con, trong trường hợp này là 4 đơn vị.
+				2. `nav`: Là một lớp CSS đơn giản đặt kiểu cho phần tử `<nav>`. Nó có thể được sử dụng để định dạng và tùy chỉnh giao diện của thanh điều hướng (navigation) trong trang web của bạn.
+				3. `p-1`: Thêm padding với giá trị là 1 đơn vị. Giá trị này phản ánh kích thước của khoảng cách giữa nội dung và mép của phần tử.
+				4. `bg-red-500`: Đặt màu nền của phần tử thành một màu đỏ có mã màu là 500. Trong Tailwind CSS, các giá trị màu được định nghĩa trong một bảng mã màu, trong trường hợp này là màu đỏ có độ đậm 500.
+				5. `w-500`: Đặt chiều rộng của phần tử thành một giá trị cụ thể là 500 đơn vị. Trong Tailwind CSS, `w-` là viết tắt của width và được sử dụng để đặt chiều rộng của phần tử.
+				Lưu ý rằng cụm từ "flex", "flex-col", "gap-y-4", "p-1", "bg-red-500", và "w-500" là những class được Tailwind CSS cung cấp để giúp thiết kế giao diện một cách dễ dàng và hiệu quả.
+		]
+			
+	- tạo một layout chung cho trang login và register (có thư mục cha ảo và file layout ở trong) [
+		> nhưng url có dạng (không cần tên thư mục cha trong url > do thư mục ảo (auth)):
+			http://localhost:3000/login
+			http://localhost:3000/register
+			
+		> để làm được điều này phải có thư mục ảo cha dạng (auth)
+		
+		- tạo 'app\(auth)\login\page.tsx'
+			const Page = () => {
+				return (
+					<div>
+						Login Page
+					</div>
+				)
+			}
+			export default Page
+		
+		- tạo 'app\(auth)\register\page.tsx'
+			const Page = () => {
+				return (
+					<div>
+						Register Page
+					</div>
+				)
+			}
+			export default Page
+		
+		- tạo 'app\(auth)\layout.tsx'
+			const AuthLayout = ({children} : {children: React.ReactNode}) => {
+				return (
+					<div className="flex flex-col gap-y-4">
+						<nav className="bg-red-500 w-full">
+							Auth Nav
+						</nav>
+						{children}
+					</div>
+				)
+			}
+			export default AuthLayout
+		]
+		
+	- mặc định component là server component, nên muốn chuyển thành client thì như sau [
+		- tạo 'app\test\page.tsx'
+			"use client"
+			const TestPage = () => {
+
+				const onClick = () => {
+					console.log("Something")
+				}
+
+				return (
+					<div onClick={onClick}>
+						Helle Test Page
+					</div>
+				)
+			}
+			export default TestPage
+			
+			> dùng "use client" thì mới có thể click trên client được
+			> Server components:
+				> backend behaviour
+				> database access
+				> server cache
+				> streaming
+				> partial rendering
+				> SEO
+				> initial page load
+			> client components:
+				> frontend behaviour
+				> useEffect
+				> useState
+				> onClick
+		]
