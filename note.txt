@@ -1,4 +1,4 @@
-* GitHub
+* GitHub [
 	…or create a new repository on the command line
 		echo "# nextjs-twitch" >> README.md
 		git init
@@ -12,10 +12,10 @@
 		git remote add origin https://github.com/filezingme/nextjs-twitch.git
 		git branch -M main
 		git push -u origin main
+]
 
 --------------------------------------------------------------------------------------------
-
-- Setup
+- Setup [
 	> https://www.codewithantonio.com/courses/b30909d3-bdfb-4b89-9d39-22037a1a199b/chapters/82770ce0-3be4-4367-8145-cdd5c46e7b3b
 	
 	$ npx create-next-app@latest video-twitch [
@@ -60,8 +60,9 @@
 				- và trong 'app\page.tsx' gọi thuộc tính vừa thêm:
 					<Button size='lg' variant='custom'>Click me</Button>
 		]
+]
 				
-- Routing Concepts
+- Routing Concepts [
 	- tạo file 'app\folder\page.tsx' thì sẽ truy cập được bằng 'http://localhost:3000/folder'
 	- hoặc 'app\folder\folder2\page.tsx' thì sẽ truy cập được bằng 'http://localhost:3000/folder/folder2'
 	
@@ -197,3 +198,148 @@
 				> useState
 				> onClick
 		]
+]
+
+--------------------------------------------------------------------------------------------
+- Authentication [
+	- https://clerk.com/
+		> một dịch vụ quản lý xác thực và quyền truy cập dành cho các ứng dụng web.
+			Clerk cung cấp các công cụ và API để giúp các nhà phát triển xây dựng, quản lý, và tùy chỉnh các trải nghiệm đăng nhập và xác thực người dùng trong ứng dụng của họ. Điều này bao gồm việc quản lý thông tin người dùng, quyền truy cập, đăng ký, và các khía cạnh khác của quản lý người dùng.
+			Một số tính năng mà Clerk có thể cung cấp bao gồm:
+			1. **Xác thực người dùng:** Clerk có thể giúp xác thực người dùng thông qua các phương tiện như email/password, xác minh một lần (OTP), và các phương thức xác thực khác.
+			2. **Quản lý thông tin người dùng:** Lưu trữ và quản lý thông tin cá nhân của người dùng.
+			3. **Quản lý quyền truy cập:** Cấp và quản lý quyền truy cập cho người dùng trong ứng dụng.
+			4. **Giao diện người dùng:** Cung cấp các thành phần giao diện người dùng để tích hợp vào ứng dụng, giúp dễ dàng thêm các chức năng đăng nhập và quản lý người dùng.
+			
+		> Login: bằng tài khoản github filezingme
+		
+		- Add Application:
+			> Application name: gamehub
+			> How will your users sign in?
+				> Google: Enable (chỉ enable mỗi google, tất cả khác Off hết)
+				> Click 'create application'
+					> Quickstarts: chọn 'Nextjs'
+					> API Keys: copy api key và tạo file '.env.local'
+						NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZGlzY3JldGUtZHJ1bS05NS5jbGVyay5hY2NvdW50cy5kZXYk
+						CLERK_SECRET_KEY=sk_test_1ZGFU4StnhKcwf3BzoO46P6AxmI0rcbaJtyzBXnXal
+					> click 'Continue in docs' để xem hướng dẫn docs
+					
+	- tạo file '.env'
+						
+	- update file '.gitignore' 
+		> thêm line này:
+			...
+			.env
+			...
+			
+	- nhấn ctrl+shift+p và gõ 'reload' > hiện ra 'Developer: reload window' thì chọn > sẽ khởi động lại vscode
+		> mục đích để app nhận file .env
+		
+	- paste apikey đã tạo ở trên vào file .env vừa tạo, file chỉ chứa mỗi content này:
+		NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ZGlzY3JldGUtZHJ1bS05NS5jbGVyay5hY2NvdW50cy5kZXYk
+		CLERK_SECRET_KEY=sk_test_1ZGFU4StnhKcwf3BzoO46P6AxmI0rcbaJtyzBXnXal
+		
+	- ở bước trên: click 'Continue in docs' để xem hướng dẫn docs sẽ nhìn thấy:
+		- mục 'Install @clerk/nextjs'
+			- copy và chạy lệnh 'npm install @clerk/nextjs' trong vscode như hướng dẫn
+			
+		- mục 'Wrap your app in <ClerkProvider>'
+			- copy import { ClerkProvider } from '@clerk/nextjs' ở hướng dẫn và dán vào đầu của file 'app\layout.tsx'
+			- bọc thẻ <html> trong file 'app\layout.tsx' bằng thẻ <ClerkProvider> như hướng dẫn
+				<ClerkProvider>
+				  <html lang="en">
+					<body className={inter.className}>{children}</body>
+				  </html>
+				</ClerkProvider>
+				
+		- mục 'Require authentication to access your app'
+			- copy code như hướng dẫn và tạo file middleware.ts và rồi dán code vào:
+				import { authMiddleware } from "@clerk/nextjs";
+ 
+				// This example protects all routes including api/trpc routes
+				// Please edit this to allow other routes to be public as needed.
+				// See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
+				export default authMiddleware({});
+				 
+				export const config = {
+				  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+				};
+				
+		- mục 'Next steps'
+			- click 'Create custom sign-up and sign-in pages' để chuyến đến trang 'https://clerk.com/docs/references/nextjs/custom-signup-signin-pages'
+				> ở mục 'Build your sign-up page'
+					> xem hướng dẫn và tạo file 'app\(auth)\sign-up\[[...sign-up]]\page.tsx'
+						> copy code như hướng dẫn vào:
+							import { SignUp } from "@clerk/nextjs";
+ 
+							export default function Page() {
+							  return <SignUp />;
+							}
+				
+				> ở mục 'Build your sign-in page'
+					> xem hướng dẫn và tạo file 'app\(auth)\sign-in\[[...sign-in]]\page.tsx'
+						> copy code như hướng dẫn vào:
+							import { SignIn } from "@clerk/nextjs";
+ 
+							export default function Page() {
+							  return <SignIn />;
+							}
+							
+				> ở mục 'Update your environment variables'
+					> code code như hướng dẫn vào file '.env':
+						...
+						NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+						NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+						NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+						NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+						
+	- chạy 'npm run dev' và truy cập 'http://localhost:3000' xem kết quả
+		> sẽ redirect tới trang 'http://localhost:3000/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F'
+			> một cửa sổ 'Sign in' hiện ra, nhấn vào 'Continue with Google'
+				> sau khi đăng nhập và approval với tài khoản google thì sẽ redirect trở lại trang chủ '/', lúc này sẽ nhìn thấy nội dung trang home:
+					'Only authenticated users can see this'
+					
+	- tạo giao diện trang chủ với nút UserButton để click signout tài khoản:
+		> update 'app\page.tsx' với code như sau:
+			import {UserButton} from '@clerk/nextjs'
+
+			export default function Page() {
+			  return (
+				<div className='flex flex-col gap-y-4'>
+				  <h1>Dashboard</h1>
+				  <UserButton
+					afterSignOutUrl='/'
+				  />
+				</div>
+			  )
+			}
+		
+		> chạy và xem kết quả signout
+		
+	- tạo file layout 'app\(auth)\layout.tsx' chung cho các trang sing-in và sign-out, có code như sau:
+		const AuthLayout = ({children} : {children: React.ReactNode}) => {
+			return (
+				<div className="h-full flex items-center justify-center">
+					{children}
+				</div>
+			)
+		}
+		export default AuthLayout
+		
+			> giải thích từng class:
+			1. **`h-full`**: Đặt chiều cao của phần tử là 100% chiều cao của phần tử cha. Nói cách khác, phần tử sẽ chiếm toàn bộ chiều cao của phần tử chứa nó.
+			2. **`flex`**: Đặt phần tử trong một container flex, làm cho các phần tử con của nó trở thành các phần tử linh hoạt. Các phần tử con sẽ căng hoặc co lại để điều vừa vặn với kích thước của container.
+			3. **`items-center`**: Đặt phần tử con theo chiều dọc giữa (theo trục chính của container flex). Điều này làm cho nó nằm ở giữa theo chiều dọc.
+			4. **`justify-center`**: Đặt phần tử con theo chiều ngang giữa (theo trục chính của container flex). Điều này làm cho nó nằm ở giữa theo chiều ngang.
+			Tổng cộng, đoạn mã trên làm cho phần tử có chiều cao bằng với chiều cao của phần tử chứa nó, và đặt nó ở giữa cả theo chiều dọc và chiều ngang, tạo ra một trung tâm dọc và ngang. Điều này thường được sử dụng để căn giữa nội dung của một phần tử trong giao diện.
+		
+	- update 'app\globals.css', thêm css sau vào:
+		html, body, :root {
+		  height: 100%;
+		}
+]
+
+--------------------------------------------------------------------------------------------
+- Dark mode [
+	
+]
