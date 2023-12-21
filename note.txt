@@ -341,5 +341,211 @@
 
 --------------------------------------------------------------------------------------------
 - Dark mode [
+	- update 'app\globals.css' [
+		@tailwind base;
+		@tailwind components;
+		@tailwind utilities;
+
+		html,
+		body,
+		:root {
+		  height: 100%;
+		  @apply bg-neutral-900/80;
+		}
+
+		.hidden-scrollbar {
+		  -ms-overflow-style: none;
+		  scrollbar-width: none;
+		}
+
+		.hidden-scrollbar::-webkit-scrollbar { 
+		  display: none;
+		}
+		 
+		@layer base {
+		  :root {
+			--background: 0 0% 100%;
+			--foreground: 222.2 84% 4.9%;
+
+			--card: 0 0% 100%;
+			--card-foreground: 222.2 84% 4.9%;
+		 
+			--popover: 0 0% 100%;
+			--popover-foreground: 222.2 84% 4.9%;
+		 
+			--primary: 222.2 47.4% 11.2%;
+			--primary-foreground: 210 40% 98%;
+		 
+			--secondary: 210 40% 96.1%;
+			--secondary-foreground: 222.2 47.4% 11.2%;
+		 
+			--muted: 210 40% 96.1%;
+			--muted-foreground: 215.4 16.3% 46.9%;
+		 
+			--accent: 210 40% 96.1%;
+			--accent-foreground: 222.2 47.4% 11.2%;
+		 
+			--destructive: 0 84.2% 60.2%;
+			--destructive-foreground: 210 40% 98%;
+
+			--border: 214.3 31.8% 91.4%;
+			--input: 214.3 31.8% 91.4%;
+			--ring: 222.2 84% 4.9%;
+		 
+			--radius: 0.5rem;
+		  }
+		 
+		  .dark {
+			--background: 226.7 12.7% 13.9%;
+			--foreground: 210 40% 98%;
+		 
+			--card: 226.7 12.7% 13.9%;
+			--card-foreground: 210 40% 98%;
+		 
+			--popover: 226.7 12.7% 13.9%;
+			--popover-foreground: 210 40% 98%;
+		 
+			--primary: 210 40% 98%;
+			--primary-foreground: 222.2 47.4% 11.2%;
+		 
+			--secondary: 226.7 12.7% 17.5%;
+			--secondary-foreground: 210 40% 98%;
+		 
+			--muted: 226.7 12.7% 17.5%;
+			--muted-foreground: 215 20.2% 65.1%;
+		 
+			--accent: 226.7 12.7% 17.5%;
+			--accent-foreground: 210 40% 98%;
+		 
+			--destructive: 0 62.8% 30.6%;
+			--destructive-foreground: 210 40% 98%;
+		 
+			--border: 226.7 12.7% 17.5%;
+			--input: 226.7 12.7% 17.5%;
+			--ring: 212.7 26.8% 83.9%;
+		  }
+		}
+		 
+		@layer base {
+		  * {
+			@apply border-border;
+		  }
+		  body {
+			@apply bg-background text-foreground;
+		  }
+		}
+	]	
 	
+	- thêm ảnh 'public\spooky.svg'
+		> được lấy từ 'https://github.com/AntonioErdeljac/next14-twitch-clone/blob/master/public/spooky.svg'
+		
+	- tạo file 'app\(auth)\_components\logo.tsx' [
+		import Image from 'next/image'
+		import {Poppins} from 'next/font/google'
+		import {cn} from '@/lib/utils'
+
+		const font = Poppins({
+			subsets: ["latin"],
+			weight: ["200", "300", "400", "500", "600", "700", "800"]
+		})
+
+		export const Logo = () => {
+			return (
+				<div className='flex flex-col items-center gap-y-4'>
+					<div className='bg-white rounded-full p1'>
+						<Image 
+							src="/spooky.svg"
+							alt="Gamehub"
+							height={80}
+							width={80}
+						/>
+					</div>
+					<div className={cn(
+						'flex flex-col items-center',
+						font.className
+						)}>
+						<p className="text-xl font-semibold">
+							Gamehub
+						</p>
+						<p className="text-sm text-muted-foreground">
+							Let's play
+						</p>
+					</div>
+				</div>
+			)
+		}
+	]
+	
+	- update 'app\(auth)\layout.tsx' [
+		import { Logo } from "./_components/logo"
+		...
+			<div className="h-full flex flex-col items-center justify-center space-y-6">
+				<Logo/>
+				{children}
+			</div>
+		...
+	]
+		
+		
+	- chạy lệnh:
+		$npm i @clerk/themes
+	
+	- update 'app\layout.tsx' [
+		...
+		import {dark} from '@clerk/themes'
+		...
+		<ClerkProvider appearance={{baseTheme: dark}}>
+		  ...
+		</ClerkProvider>
+		...
+	]
+	
+	- chạy lệnh:
+		$npm install next-themes
+			> ref: https://ui.shadcn.com/docs/dark-mode/next
+		
+		$npm run dev
+		
+	- tạo 'components\theme-provider.tsx' [
+		"use client"
+
+		import * as React from "react"
+		import { ThemeProvider as NextThemesProvider } from "next-themes"
+		import { type ThemeProviderProps } from "next-themes/dist/types"
+
+		export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+		  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+		}
+	]
+		> ref phần 'Create a theme provider' trong 'https://ui.shadcn.com/docs/dark-mode/next'
+		
+	- update 'app\layout.tsx' [
+		...
+		import {ThemeProvider} from '@/components/theme-provider'
+		...
+		<ThemeProvider
+            attribute='class'
+            forcedTheme='dark'
+            storageKey='gamehub-theme'
+		>
+			{children}
+		</ThemeProvider>
+		...
+	]
+	
+	- vào 'https://dashboard.clerk.com/' để config thêm cái authentication
+		> click app 'gamehub', chuyển trang mới:
+			> click 'Users'
+				> click 'Delete Users'
+		
+		> click 'User & Authentication'
+			> click 'Email, Phone, Username'
+				> Username: click để enable
+				> click icon bánh răng rồi chọn bỏ enable mục 'Sign-in > Allow users to sign in with their username'
+			
+			> click 'Apply Changes'
+			
+		> trở lại trang chủ http://localhost:3000/ và login lại xem kq đã hiện username để nhập
+			> login thành công thì
+				> click icon và chọn 'Manage account' để đổi username nếu muốn
 ]
