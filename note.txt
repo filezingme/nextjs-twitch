@@ -604,7 +604,7 @@
 						> chạy xong sẽ tạo ta file và thư mục: 'prisma\schema.prisma'
 						
 					> Phần 'Add credentials to .env'
-						> chọn check mặc định 'Optimized'
+						> để mặc định 'Optimized' checked
 						> trong phần .env thì copy và dán vào trong file '.env' thay thế cho giá trị biến 'DATABASE_URL':
 							DATABASE_URL='mysql://drat558012bzz90bfq28:pscale_pw_P61oAWi3Uu1pZT9mvQyedGDfds5teo2DsMmP0tyauCI@aws.connect.psdb.cloud/gamehub?sslaccept=strict'
 							
@@ -637,7 +637,7 @@
 			globalThis.prisma = db
 	]
 	
-	- update '': tạo một model tên là User [
+	- update 'prisma\schema.prisma': tạo một model tên là User [
 		...
 		model User {
 		  id String @id @default(uuid())
@@ -730,7 +730,7 @@
 			> kết quả chạy 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app' cũng giống như chạy 'http://localhost:3000'.
 				> lưu ý nếu không chạy 'npm run dev' để khởi chạy localhost cổng 3000 thì sẽ lỗi khi truy cập 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app'
 			
-			- hoặc với fixed url được map tới 'localhost:3000'			
+			- hoặc fixed url được map tới 'localhost:3000'			
 				- truy cập lại dashboard > Cloud Edge > Domains: 
 					> 'https://dashboard.ngrok.com/cloud-edge/domains'
 						> click vào nút 'Start a Tunnel' bên phải domain có sẵn (có biểu tượng như lệnh nhắc cmd)
@@ -753,5 +753,154 @@
 
 --------------------------------------------------------------------------------------------
 - Clerk webhook [
+	> Webhook là một cơ chế cho phép các hệ thống liên kết và tương tác với nhau qua HTTP. Trong ngữ cảnh CRM như Clerk, webhooks thường được sử dụng để cập nhật dữ liệu tự động, thông báo về các sự kiện quan trọng, hoặc kích hoạt các hành động tự động dựa trên các sự kiện cụ thể trong hệ thống.
+
+	Ví dụ, khi một sự kiện quan trọng xảy ra trong Clerk.com (ví dụ: tạo hoặc cập nhật khách hàng, giao dịch mới), Clerk có thể gửi thông báo đến một URL được chỉ định thông qua webhook. Điều này cho phép các ứng dụng hoặc dịch vụ khác "lắng nghe" sự kiện và thực hiện các hành động cần thiết.
 	
+	- truy cập phần webhooks trong dashboard của clerk.com, có url dạng 'https://dashboard.clerk.com/apps/app_2Zj5M02eblTe1tudnUVsf0HfwxG/instances/ins_2Zj5LzftuGFLaUAnQSl8NWkuzny/webhooks'		
+		> click 'Add Endpoint'
+			> Endpoint URL: nhập địa chỉ localhost của ngrok domain được tạo ở bài trên và thêm hậu tố /api/webhooks/clerk vào cuối, sẽ được:
+				'https://classic-man-pumped.ngrok-free.app/api/webhooks/clerk'
+				
+			> Filter events: nhập từ khóa 'user' để search và kết quả sổ ra thì tích chọn 'user' với 3 items 'user.created', 'user.deleted', 'user.updated'
+			
+			> click 'Create'
+				> sẽ nhìn thấy một 'Signing Secret' được tạo ra, copy và dán vào file '.env' dưới một biến mới được tạo
+					...
+					CLERK_WEBHOOKS_SECRET=whsec_FCmqd2fMcPfNm5Jmpo9cBkPfq+mrkJVZ_bk2806
+					...
+			
+					> ref docs 'https://clerk.com/docs/users/sync-data'
+					
+				> cài đặt package 'svix'
+					'$npm install svix'
+						> thiết lập endpoint. Svix cung cấp gói xác minh chữ ký webhook, giúp dễ dàng xác minh tính xác thực của các sự kiện webhook.
+	
+	- tạo file 'app\api\webhooks\clerk\route.ts'		
+		> nội dung file [
+			import { Webhook } from 'svix'
+			import { headers } from 'next/headers'
+			import { WebhookEvent } from '@clerk/nextjs/server'
+			 
+			export async function POST(req: Request) {
+			 
+			  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
+			  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOKS_SECRET
+			 
+			  if (!WEBHOOK_SECRET) {
+				throw new Error('Please add CLERK_WEBHOOKS_SECRET from Clerk Dashboard to .env or .env.local')
+			  }
+			 
+			  // Get the headers
+			  const headerPayload = headers();
+			  const svix_id = headerPayload.get("svix-id");
+			  const svix_timestamp = headerPayload.get("svix-timestamp");
+			  const svix_signature = headerPayload.get("svix-signature");
+			 
+			  // If there are no headers, error out
+			  if (!svix_id || !svix_timestamp || !svix_signature) {
+				return new Response('Error occured -- no svix headers', {
+				  status: 400
+				})
+			  }
+			 
+			  // Get the body
+			  const payload = await req.json()
+			  const body = JSON.stringify(payload);
+			 
+			  // Create a new Svix instance with your secret.
+			  const wh = new Webhook(WEBHOOK_SECRET);
+			 
+			  let evt: WebhookEvent
+			 
+			  // Verify the payload with the headers
+			  try {
+				evt = wh.verify(body, {
+				  "svix-id": svix_id,
+				  "svix-timestamp": svix_timestamp,
+				  "svix-signature": svix_signature,
+				}) as WebhookEvent
+			  } catch (err) {
+				console.error('Error verifying webhook:', err);
+				return new Response('Error occured', {
+				  status: 400
+				})
+			  }
+			 
+			  // Get the ID and type
+			  const { id } = evt.data;
+			  const eventType = evt.type;
+			 
+			  console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
+			  console.log('Webhook body:', body)
+			 
+			  return new Response('', { status: 200 })
+			}
+			 
+		]
+	
+		> lưu ý:
+			> thư mục '\api\webhooks\clerk' trong vscode tương đồng với hậu tố 'api/webhooks/clerk' của Endpoint URL 'https://classic-man-pumped.ngrok-free.app/api/webhooks/clerk'
+			> ref all hướng dẫn trong 'https://clerk.com/docs/users/sync-data'
+			
+	- update 'middleware.ts'
+		> thêm dòng code sau vào trong export default authMiddleware({})
+			...
+			publicRoutes: ["/api/webhooks(.*)"]
+			...
+		
+	- truy cập Endpoint và chọn tab 'Testing' để test
+		> 'https://dashboard.clerk.com/apps/app_2Zj5M02eblTe1tudnUVsf0HfwxG/instances/ins_2Zj5LzftuGFLaUAnQSl8NWkuzny/webhooks' 
+		
+		> test tạo user:
+			> Send event: chọn 'user.created'
+			> click 'Send Example'
+				> kết quả success hay fail sẽ báo trong trang & tại mục 'Message Attempts' sau khi click 'Send Example'
+				> check terminal để xem kết quả created user 
+					> chính là những dòng console.log này trong file 'app\api\webhooks\clerk\route.ts' in ra terminal
+						console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
+						console.log('Webhook body:', body)
+						
+		> test xóa user:
+			> Send event: chọn 'user.created'
+			> click 'Send Example'
+				> kết quả success hay fail cũng sẽ báo trong trang & tại mục 'Message Attempts' sau khi click 'Send Example'
+				> check terminal để xem kết quả xóa user sẽ như sau:
+					Webhook with and ID of user_29wBMCtzATuFJut8jO2VNTVekS4 and type of user.deleted
+					Webhook body: {"data":{"deleted":true,"id":"user_29wBMCtzATuFJut8jO2VNTVekS4","object":"user"},"object":"event","type":"user.deleted"}
+		
+		> test nếu tắt hết cửa sổ đang chạy trong terminal của:
+			 $npm run dev
+			 $ngrok http --domain=classic-man-pumped.ngrok-free.app 3000
+			 
+			 > click 'Send Example' để xóa user sẽ nhận được kết quả FAILED
+			 > giờ khởi động lại terminal 2 lệnh trên và click 'Send Example' sẽ thấy 'Succeeded'
+			 
+		>>> tại sao phải tạo tên miền ảo trỏ đến localhost này 'https://classic-man-pumped.ngrok-free.app'???
+			> đó là bởi vì trên 'https://dashboard.clerk.com/' thì webhooks mới cho test một url internet chứ ko nhận một url localhost
+			
+	- test đăng nhập với username tạo mới:
+		> vào mục User của 'https://dashboard.clerk.com/' và chọn Delete User để xóa tài khoản trong phần 'Manage Users' đi
+		> update 'app\api\webhooks\clerk\route.ts'
+			...
+			import {db} from '@/lib/db'
+			...
+			if (eventType==='user.created') {
+				await db.user.create({
+					data: {
+						externalUserId: payload.data.id,
+						username: payload.username,
+						imageUrl: payload.image_url,
+					}
+				})
+			}
+			...
+			
+		> chạy lệnh 'npx prisma studio' để truy cập 'http://localhost:5555/'
+		
+		> truy cập 'http://localhost:3000/' và sign-in với username nhập mới
+
+		>>> đang học phút thứ 20 của bài 'Clerk webhook', đang lỗi:
+			Invalid `prisma.user.create()` invocation:
+			Authentication failed against database server at `aws.connect.psdb.cloud`, the provided database credentials for `drat558012bzz90bfq28` are not valid.
 ]
