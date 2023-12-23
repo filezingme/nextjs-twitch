@@ -675,3 +675,83 @@
 				Prisma schema loaded from prisma\schema.prisma
 				Prisma Studio is up on http://localhost:5555
 ]
+
+--------------------------------------------------------------------------------------------
+- Local tunnel [		
+	- đầu tiên cài đặt Chocolatey:
+		> Mở PowerShell với quyền quản trị (Run as Administrator).
+		> Chạy lệnh sau để cài đặt Chocolatey:
+			Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+		> Khi quá trình cài đặt hoàn tất, đóng và mở lại PowerShell để có biến môi trường mới được áp dụng.
+		> Chạy lệnh `choco` trong PowerShell để xác minh rằng Chocolatey đã được cài đặt thành công.	   
+			> nếu lệnh không thấy choco có nghĩa là cài đặt thất bại, cần xóa thư mục này đi 'C:\ProgramData\chocolatey' và chạy lại lệnh cài đặt Chocolatey phía trên
+			> muốn chạy ngrok thông qua vscode thì cần phải restart lại vscode để terminal có thể nhận
+	
+	- truy cập 'ngrok.com' với tài khoản github
+		> ref 'https://dashboard.ngrok.com/get-started/setup/windows'
+			  'https://ngrok.com/download'
+		
+		- chạy lệnh cài đặt ngrok thông qua Chocolatey đã cài đặt ở trên
+			$choco install ngrok
+				> Do you want to run the script?([Y]es/[A]ll - yes to all/[N]o/[P]rint): y
+				
+			> chạy lệnh:
+				'$ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM'
+					> sẽ tạo ra file 'C:\Users\phucb\AppData\Local\ngrok\ngrok.yml'
+						> có thể check file ngrok.yml nằm ở đâu bằng lệnh:
+							'$ ngrok config check'				
+								> nếu muốn gỡ đi để cài lại thì dùng lệnh:
+									$choco uninstall ngrok --force
+									
+									lệnh trên sẽ buộc gỡ cài đặt ngrok mặc dù đã cài đặt phiên bản 3.5.0. Nếu lệnh trên không hoạt động, bạn có thể thử tùy chọn
+									$choco uninstall ngrok --force --ignore-checksums
+									
+									hoặc cài đặt một phiên bản cụ thể,
+									choco install ngrok --version=3.4.0		
+
+								> ref docs 'https://ngrok.com/docs/getting-started/?os=windows'
+						
+		- chạy lệnh 'ngrok http 3000' để  tạo một random url với hậu tố 'ngrok-free.app' được map tới 'localhost:3000'
+			> kết quả in ra:
+				Introducing Pay-as-you-go pricing: https://ngrok.com/r/payg
+				Session Status                online
+				Account                       bloxfruitofficer@gmail.com (Plan: Free)
+				Version                       3.5.0
+				Region                        Asia Pacific (ap)
+				Latency                       48ms
+				Web Interface                 http://127.0.0.1:4040
+				Forwarding                    https://d22c-2402-800-61b3-7be3-3dfa-66ab-b4c6-a59a.ngrok-free.app -> http://localhost:3000
+				Connections                   ttl     opn     rt1     rt5     p50     p90     
+											  10      1       0.06    0.03    0.37    21.52   
+				HTTP Requests
+				-------------
+				
+			> kết quả chạy 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app' cũng giống như chạy 'http://localhost:3000'.
+				> lưu ý nếu không chạy 'npm run dev' để khởi chạy localhost cổng 3000 thì sẽ lỗi khi truy cập 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app'
+			
+			- hoặc với fixed url được map tới 'localhost:3000'			
+				- truy cập lại dashboard > Cloud Edge > Domains: 
+					> 'https://dashboard.ngrok.com/cloud-edge/domains'
+						> click vào nút 'Start a Tunnel' bên phải domain có sẵn (có biểu tượng như lệnh nhắc cmd)
+							> một popup mở lên, tại mục 'Copy and paste the following into your terminal.' copy lệnh và chạy trong terminal:
+								'ngrok http --domain=classic-man-pumped.ngrok-free.app 3000'
+									> kết quả in ra:								
+										Introducing Pay-as-you-go pricing: https://ngrok.com/r/payg
+										Session Status                online
+										Account                       filezingme (Plan: Free)
+										Version                       3.5.0
+										Region                        Asia Pacific (ap)
+										Latency                       51ms
+										Web Interface                 http://127.0.0.1:4040
+										Forwarding                    https://classic-man-pumped.ngrok-free.app -> http://localhost:3000
+										Connections                   ttl     opn     rt1     rt5     p50     p90     
+																	  9       1       0.02    0.02    0.31    6.61    
+										HTTP Requests
+										-------------
+ ]
+
+--------------------------------------------------------------------------------------------
+- Clerk webhook [
+	
+]
