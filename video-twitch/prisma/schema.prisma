@@ -1,0 +1,20 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL") //biến này được định nghĩa trong file .env
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  imageUrl String @db.Text
+  externalUserId String @unique
+  bio String? @db.Text //Dấu chấm hỏi (?) ở cuối kiểu dữ liệu String cho biết rằng trường này có thể có giá trị null (không bắt buộc).
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
