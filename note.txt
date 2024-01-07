@@ -1032,5 +1032,233 @@
 
 --------------------------------------------------------------------------------------------
 - Navbar [
+	- tạo thư mục 'app\(browse)\(home)'
+		- move file 'page.tsx' vào trong thư mục \(home)
+	- xóa thư mục '.next'
+	- chạy 'npm run dev' để chạy lại cho refresh và tự động tạo lại thư mục '.next'
 	
+	- tạo file 'app\(browse)\layout.tsx'[
+		import { Navbar } from "./_components/navbar"
+
+		const BrowseLayout = ({ children }: { children: React.ReactNode }) => {
+			return (
+				<>
+					<Navbar />
+					<div className="flex h-full pt-20">
+						{children}
+					</div>
+				</>
+			)
+		}
+
+		export default BrowseLayout
+	]
+	
+	- tạo file 'app\(browse)\_components\navbar\logo.tsx' [
+		import Link from 'next/link'
+		import Image from 'next/image'
+		import { Poppins } from 'next/font/google'
+		import { cn } from '@/lib/utils'
+
+		const font = Poppins({
+			subsets: ["latin"],
+			weight: ["200", "300", "400", "500", "600", "700", "800"]
+		})
+
+		export const Logo = () => {
+			return (
+				<Link href='/'>
+					<div className='flex items-center gap-x-4 hover:opacity-75 transition'>
+						<div className='bg-white rounded-full p-1 mr-12 shrink-0 lg:mr-0 lg:shrink'>
+							<Image
+								src='/spooky.svg'
+								alt='Gamehub'
+								height='32'
+								width='32'
+							/>
+						</div>
+
+						<div className={cn(
+							'hidden lg:block',
+							font.className
+						)}>
+							<p className='text-lg font-semibold'>
+								Gamehub
+							</p>
+							<p className='text-xs text-muted-foreground'>
+								Let's play
+							</p>
+						</div>
+					</div>
+				</Link>
+			)
+		}
+	]
+		
+	- chạy lệnh 'npx shadcn-ui@latest add input', rồi chạy lại 'npm run dev'
+		> thêm một thành phần input vào dự án
+		
+	- chạy lệnh 'npm i query-string', rồi chạy lại 'npm run dev'
+	
+	- tạo file 'app\(browse)\_components\navbar\search.tsx' [
+		'use client'
+		import qs from 'query-string'
+		import React, { useState } from 'react'
+		import { SearchIcon, X } from 'lucide-react'
+		import { useRouter } from 'next/navigation'
+
+		import { Input } from '@/components/ui/input'
+		import { Button } from '@/components/ui/button'
+
+		export const Search = () => {
+			//console.log('I am logged here')
+
+			const router = useRouter()
+			const [value, setValue] = useState('')
+
+			const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+				e.preventDefault() //khi form được submit, e.preventDefault() sẽ ngăn chặn chuyển hướng trang và cho phép bạn xử lý sự kiện submit bằng cách tự do tùy chỉnh hành vi mà không cần load lại trang hoặc điều hướng đến một URL mớ
+
+				if (!value)
+					return
+
+				//localhost:3000?tern=value
+				const url = qs.stringifyUrl({
+					url: '/search',
+					query: { tern: value }
+				}, { skipEmptyString: true })
+
+				router.push(url)
+			}
+
+			const onClear = () => {
+				setValue('')
+			}
+
+			return (
+				<form
+					onSubmit={onSubmit}
+					className='relative w-full lg:w-[400px] flex items-center'
+				>
+					<Input
+						value={value}
+						onChange={(e) => setValue(e.target.value)}
+						placeholder='Search'
+						className='rounded-r-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0'
+					/>
+					{value && (
+						<X
+							className='absolute top-2.5 right-14 h-5 w-5 text-muted-foreground cursor-pointer hover:opacity-75 transition'
+							onClick={onClear}
+						/>
+					)}
+					<Button
+						type='submit'
+						size='sm'
+						variant='secondary'
+						className='rounded-l-none'
+					>
+						<SearchIcon className='h-5 w-5 text-muted-foreground' />
+					</Button>
+				</form>
+			)
+		}
+		
+		- Lưu ý:
+			> sử dụng 'use client' thì sẽ render ở client, chính vì thế mà mở trình duyệt dưới console sẽ nhìn thấy dòng chữ ở 'I am logged here'
+				console.log('I am logged here')
+			> nếu không sử dụng 'use client' thì sẽ render ở server, chính vì thế mà mở trình duyệt dưới console sẽ không nhìn thấy dòng chữ ở 'I am logged here', nhưng sẽ nhìn thấy ở màn hình terminal 'I am logged here'
+				console.log('I am logged here')
+	]
+	
+	- tạo file 'app\(browse)\_components\navbar\actions.tsx' [
+		import { Button } from "@/components/ui/button"
+		import { SignInButton, UserButton, currentUser } from "@clerk/nextjs"
+		import { Clapperboard } from "lucide-react"
+		import Link from "next/link"
+
+		export const Actions = async () => {
+
+			const user = await currentUser()
+
+			return (
+				<div className="flex items-center justify-end gap-x-2 ml-4 lg:ml-0">
+					{!user && (
+						<SignInButton>
+							<Button>
+								Login
+							</Button>
+						</SignInButton>
+					)}
+
+					{!!user && (
+						<div className="flex items-center gap-x-4">
+							<Button
+								size='sm'
+								variant='ghost'
+								className="text-muted-foreground hover:text-primary"
+								asChild
+							>
+								<Link href={`/u/${user.username}`}>
+									<Clapperboard className="h-5 w-5 lg:mr-2" />
+									<span className="hidden lg:block">
+										Dashboard
+									</span>
+								</Link>
+							</Button>
+							<UserButton
+								afterSignOutUrl="/"
+							/>
+						</div>
+					)}
+				</div>
+			)
+		}
+	]
+	
+	- tạo file 'app\(browse)\_components\navbar\index.tsx' [
+		import { Actions } from "./actions"
+		import { Logo } from "./logo"
+		import { Search } from "./search"
+
+		export const Navbar = () => {
+			return (
+				<nav className="fixed top-0 w-full h-20 z-[49] bg-[#252731] px-2 lg:px-4 flex justify-between items-center shadow-sm">
+					<Logo />
+					<Search />
+					<Actions />
+				</nav>
+			)
+		}
+	]
+	
+	- cập nhật 'middleware.ts'
+		export default authMiddleware({
+		  publicRoutes: [
+			'/', //-> thêm phần tử này
+			"/api/webhooks(.*)"
+		  ]
+		});
+	
+	- câp nhật 'app\(browse)\(home)\page.tsx' thành như này [
+		export default function Page() {
+		  return (
+			<div className='flex flex-col gap-y-4'>
+			  <h1>Home page</h1>
+			</div>
+		  )
+		}
+	]
+	
+	- sửa lại Button 'components\ui\button.tsx' cho đẹp hơn, thêm primary:
+		variant: {
+			...
+			primary: "text-primary bg-blue-600 hover:bg-blue-600/800"
+		}
+		
+		- rồi cập nhật lại Button trong 'app\(browse)\_components\navbar\actions.tsx'
+			<Button size='sm' variant='primary'>
+				Login
+			</Button>
+		
 ]
