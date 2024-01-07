@@ -553,7 +553,7 @@
 --------------------------------------------------------------------------------------------
 - Database [
 	- đăng nhập 'https://auth.planetscale.com/sign-in' với tài khoản github 
-		> Create a new database
+		> Create a new database [
 			> Database name: gamehub
 			> Plan type: Hobby > 'Your Hobby plan has a limit of 5 GB of storage.'
 			> nhập thông tin thẻ tín dụng, nhớ mở khóa thẻ để add vào site thì mới Create Database loại Hobby free được
@@ -623,6 +623,23 @@
 						
 						> chạy lệnh 'npx prisma db push' như hướng dẫn		
 							> sẽ nhìn thấy thông báo: 'The database is already in sync with the Prisma schema.'
+							
+			- Lưu ý quan trọng:
+				> Cơ sở dữ liệu miễn phí ngủ sau một thời gian không hoạt động, cần login vào và đánh thức chế đố ngủ Sleeping.
+					> và sau một thời gian không thể chạy lệnh 'npx prisma db push', báo lỗi:
+						Error: P1000: Authentication failed against database server at `aws.connect.psdb.cloud`, the provided database credentials for `drat558012bzz90bfq28` are not valid.
+						Please make sure to provide valid database credentials for the database server at `aws.connect.psdb.cloud`.
+						
+						> thì vào đây tạo password mới 'https://app.planetscale.com/filezingme/gamehub/settings/passwords', nhấn nút tạo password mới sẽ được thông tin:
+							Password name: main-2024-01-07-597e5v
+							Branch: main
+							database: gamehub
+							username: kemcga1foyf4yies9xns
+							host: aws.connect.psdb.cloud
+							password: pscale_pw_5xUDDXDHCevIrt6r9gKWDL9fHbkMiNYjOSvIhqF4Fum
+						> chạy lại 'npx prisma db push', sẽ có thông báo success:
+							The database is already in sync with the Prisma schema.
+		]
 
 	- cần cài extension có tên 'Prisma' trong vscode mục đích để 'Adds syntax highlighting, linting, code completion, formatting, jump-to-definition and more for Prisma Schema files.'
 		> install xong thì tất cả code trong file 'prisma\schema.prisma' này sẽ được highlighting đẹp, chứ ko còn 1 màu text trắng tinh nữa
@@ -674,6 +691,35 @@
 				Environment variables loaded from .env
 				Prisma schema loaded from prisma\schema.prisma
 				Prisma Studio is up on http://localhost:5555
+				
+	*** LƯU Ý:
+		- nếu lỗi:
+			Argument `username` must not be null.
+			at ti (G:\CodeWithAntonio\TwitchClone-TaiTD\video-twitch\node_modules\@prisma\client\runtime\library.js:118:5888)
+			...
+			HOẶC
+			...
+			EPERM: operation not permitted, unlink 'G:\CodeWithAntonio\TwitchClone-TaiTD\video-twitch\node_modules\.prisma\client\query_engine-windows.dll.node'
+			
+		- cách fix:
+			- tắt hết các cửa sổ terminal cũ đi
+			- tắt vscode và mở lại với quyền administrator cho chắc, rồi chạy các cmd:
+				'npm run dev'
+				'ngrok http 3000'
+				'ngrok http --domain=classic-man-pumped.ngrok-free.app 3000'
+			- xóa hoàn toàn thư mục 'node_modules' và chạy lại 
+				'npm install'
+			- xóa thư mục và file này đi 'prisma\schema.prisma' (nhớ backup lại code trong file trước khi xóa)
+				- cài đặt lại Prisma Client:
+					'npm uninstall @prisma/client'
+					'npm install @prisma/client' HOẶC 'npm install -g prisma' (Đảm bảo bạn đang sử dụng phiên bản Prisma CLI mới nhất)
+				- copy code trong file backup vào lại
+			- chạy các lệnh: 
+				'$npx prisma init'
+				'npx prisma db push'
+				'npx prisma generate'
+			- chạy lệnh:
+				'npx prisma studio'
 ]
 
 --------------------------------------------------------------------------------------------
@@ -697,7 +743,7 @@
 				> Do you want to run the script?([Y]es/[A]ll - yes to all/[N]o/[P]rint): y
 				
 			> chạy lệnh:
-				'$ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM'
+				'$ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM' 4567890
 					> sẽ tạo ra file 'C:\Users\phucb\AppData\Local\ngrok\ngrok.yml'
 						> có thể check file ngrok.yml nằm ở đâu bằng lệnh:
 							'$ ngrok config check'				
@@ -721,14 +767,14 @@
 				Region                        Asia Pacific (ap)
 				Latency                       48ms
 				Web Interface                 http://127.0.0.1:4040
-				Forwarding                    https://d22c-2402-800-61b3-7be3-3dfa-66ab-b4c6-a59a.ngrok-free.app -> http://localhost:3000
+				Forwarding                    https://e40b-2402-800-61b3-4122-fd97-70da-301a-44f0.ngrok-free.app -> http://localhost:3000
 				Connections                   ttl     opn     rt1     rt5     p50     p90     
 											  10      1       0.06    0.03    0.37    21.52   
 				HTTP Requests
 				-------------
 				
-			> kết quả chạy 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app' cũng giống như chạy 'http://localhost:3000'.
-				> lưu ý nếu không chạy 'npm run dev' để khởi chạy localhost cổng 3000 thì sẽ lỗi khi truy cập 'https://4799-2402-800-61b3-7be3-fdfd-d068-5bc4-85ab.ngrok-free.app'
+			> kết quả chạy 'https://194d-2402-800-61b3-4122-fd97-70da-301a-44f0.ngrok-free.app' cũng giống như chạy 'http://localhost:3000'.
+				> lưu ý nếu không chạy 'npm run dev' để khởi chạy localhost cổng 3000 thì sẽ lỗi khi truy cập 'https://194d-2402-800-61b3-4122-fd97-70da-301a-44f0.ngrok-free.app'
 			
 			- hoặc fixed url được map tới 'localhost:3000'			
 				- truy cập lại dashboard > Cloud Edge > Domains: 
@@ -749,6 +795,28 @@
 																	  9       1       0.02    0.02    0.31    6.61    
 										HTTP Requests
 										-------------
+										
+	- Lưu ý quan trọng:
+		File ngrok của tôi: C:\Users\phucb\AppData\Local\ngrok\ngrok.yml
+			version: "2"
+			authtoken: 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
+			
+		- cần chạy lệnh này để đổi lại token:
+			ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
+			
+		- ngrok cấu hình chính xác token trong file yml thì mới chạy lệnh này không lỗi 
+			$ngrok http 3000
+				- kết quả:
+					Build better APIs with ngrok. Early access: ngrok.com/early-access
+					Session Status                online
+					Account                       filezingme (Plan: Free)
+					Version                       3.5.0
+					Region                        Asia Pacific (ap)
+					Latency                       58ms
+					Web Interface                 http://127.0.0.1:4041
+					Forwarding                    https://classic-man-pumped.ngrok-free.app -> http://localhost:3000
+					Connections                   ttl     opn     rt1     rt5     p50     p90     
+											  0       0       0.00    0.00    0.00    0.00   
  ]
 
 --------------------------------------------------------------------------------------------
@@ -844,12 +912,16 @@
 			> ref all hướng dẫn trong 'https://clerk.com/docs/users/sync-data'
 			
 	- update 'middleware.ts'
+		// This example protects all routes including api/trpc routes
+		// Please edit this to allow other routes to be public as needed.
+		// See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
+		
 		> thêm dòng code sau vào trong export default authMiddleware({})
 			...
 			publicRoutes: ["/api/webhooks(.*)"]
 			...
 		
-	- truy cập Endpoint và chọn tab 'Testing' để test
+	- truy cập Webhooks > Endpoint > click 'URL' và chọn tab 'Testing' để test
 		> 'https://dashboard.clerk.com/apps/app_2Zj5M02eblTe1tudnUVsf0HfwxG/instances/ins_2Zj5LzftuGFLaUAnQSl8NWkuzny/webhooks' 
 		
 		> test tạo user:
@@ -862,7 +934,7 @@
 						console.log('Webhook body:', body)
 						
 		> test xóa user:
-			> Send event: chọn 'user.created'
+			> Send event: chọn 'user.deleted'
 			> click 'Send Example'
 				> kết quả success hay fail cũng sẽ báo trong trang & tại mục 'Message Attempts' sau khi click 'Send Example'
 				> check terminal để xem kết quả xóa user sẽ như sau:
@@ -879,8 +951,11 @@
 		>>> tại sao phải tạo tên miền ảo trỏ đến localhost này 'https://classic-man-pumped.ngrok-free.app'???
 			> đó là bởi vì trên 'https://dashboard.clerk.com/' thì webhooks mới cho test một url internet chứ ko nhận một url localhost
 			
-	- test đăng nhập với username tạo mới:
+	- đăng nhập với username tạo mới:
 		> vào mục User của 'https://dashboard.clerk.com/' và chọn Delete User để xóa tài khoản trong phần 'Manage Users' đi
+			> click app 'gamehub', chuyển trang mới:
+				> click 'Users'
+					> click 'Delete Users'
 		> update 'app\api\webhooks\clerk\route.ts'
 			...
 			import {db} from '@/lib/db'
@@ -895,12 +970,67 @@
 				})
 			}
 			...
+		
+		> truy cập 'http://localhost:3000/' và login xong hiện username để đặt lại, vd 'thomastai'
 			
 		> chạy lệnh 'npx prisma studio' để truy cập 'http://localhost:5555/'
-		
-		> truy cập 'http://localhost:3000/' và sign-in với username nhập mới
+			- check xem đã có 1 bản ghi mới sinh ra với username 'thomastai' vừa tạo
 
 		>>> đang học phút thứ 20 của bài 'Clerk webhook', đang lỗi:
 			Invalid `prisma.user.create()` invocation:
-			Authentication failed against database server at `aws.connect.psdb.cloud`, the provided database credentials for `drat558012bzz90bfq28` are not valid.
+			Authentication failed against database server at `aws.connect.psdb.cloud`, the provided database credentials for `drat558012bzz90bfq28` are not valid.				
+				> Xem lưu ý quan trọng ở bài '- Database' bên trên hướng dẫn cách fix.
+			
+	- cập nhật username:
+		- thêm code sau vào 'app\api\webhooks\clerk\route.ts'
+			...
+			if(eventType === 'user.updated') {
+				const currentUser = await db.user.findUnique({
+				  where: {
+					externalUserId: payload.data.id
+				  }
+				})
+
+				if (!currentUser) {
+				  return new Response('User not found', {status: 404})
+				}
+
+				await db.user.update({
+				  where: {
+					externalUserId: payload.data.id
+				  },
+				  data: {
+					username: payload.data.username,
+					imageUrl: payload.data.image_url
+				  }
+				})
+			  }
+			...
+			
+		- truy cập 'https://classic-man-pumped.ngrok-free.app/' hoặc localhost:3000
+			- click 'Management account'
+			- click 'Change username': thomastai1 chẳng hạn
+			- trở lại http://localhost:5555/ xem username đã được cập nhật thành thomastai1 chưa
+				
+	- xóa tài khoản
+		- thêm code sau vào 'app\api\webhooks\clerk\route.ts'
+			...
+			 if(eventType==='user.deleted') {
+				await db.user.delete({
+				  where: {
+					externalUserId: payload.data.id
+				  }
+				})
+			  }
+			...
+			
+		- truy cập 'https://classic-man-pumped.ngrok-free.app/' hoặc localhost:3000
+			- click 'Management account'
+			- click 'Delete account'
+			- trở lại http://localhost:5555/ xem username đã được xóa chưa
+]
+
+--------------------------------------------------------------------------------------------
+- Navbar [
+	
 ]

@@ -54,7 +54,8 @@ export async function POST(req: Request) {
   const eventType = evt.type;
  
   console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
-  // console.log('Webhook body:', body)
+  //console.log('Webhook body:', body)
+  //console.log('Webhook payload.data:', payload.data)
 
   if (eventType==='user.created') {
     await db.user.create({
@@ -63,6 +64,36 @@ export async function POST(req: Request) {
             username: payload.data.username,
             imageUrl: payload.data.image_url,
         }
+    })
+  }
+
+  if(eventType === 'user.updated') {
+    const currentUser = await db.user.findUnique({
+      where: {
+        externalUserId: payload.data.id
+      }
+    })
+
+    if (!currentUser) {
+      return new Response('User not found', {status: 404})
+    }
+
+    await db.user.update({
+      where: {
+        externalUserId: payload.data.id
+      },
+      data: {
+        username: payload.data.username,
+        imageUrl: payload.data.image_url
+      }
+    })
+  }
+
+  if(eventType==='user.deleted') {
+    await db.user.delete({
+      where: {
+        externalUserId: payload.data.id
+      }
     })
   }
 
