@@ -13,6 +13,28 @@
 		git branch -M main
 		git push -u origin main
 ]
+										
+- File ngrok của tôi: 
+	C:\Users\phucb\AppData\Local\ngrok\ngrok.yml
+		version: "2"
+		authtoken: 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
+		
+	- cần chạy lệnh này để đổi lại token:
+		ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
+		
+	- ngrok cấu hình chính xác token trong file yml thì mới chạy lệnh này không lỗi 
+		$ngrok http 3000
+			- kết quả:
+				Build better APIs with ngrok. Early access: ngrok.com/early-access
+				Session Status                online
+				Account                       filezingme (Plan: Free)
+				Version                       3.5.0
+				Region                        Asia Pacific (ap)
+				Latency                       58ms
+				Web Interface                 http://127.0.0.1:4041
+				Forwarding                    https://classic-man-pumped.ngrok-free.app -> http://localhost:3000
+				Connections                   ttl     opn     rt1     rt5     p50     p90     
+										  0       0       0.00    0.00    0.00    0.00   
 
 --------------------------------------------------------------------------------------------
 - Setup [
@@ -795,28 +817,6 @@
 																	  9       1       0.02    0.02    0.31    6.61    
 										HTTP Requests
 										-------------
-										
-	- Lưu ý quan trọng:
-		File ngrok của tôi: C:\Users\phucb\AppData\Local\ngrok\ngrok.yml
-			version: "2"
-			authtoken: 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
-			
-		- cần chạy lệnh này để đổi lại token:
-			ngrok config add-authtoken 2JDEvFJwmjbGpb8SaV7GVCECK4A_5u5nfqpzzdZhkh87A6ScM
-			
-		- ngrok cấu hình chính xác token trong file yml thì mới chạy lệnh này không lỗi 
-			$ngrok http 3000
-				- kết quả:
-					Build better APIs with ngrok. Early access: ngrok.com/early-access
-					Session Status                online
-					Account                       filezingme (Plan: Free)
-					Version                       3.5.0
-					Region                        Asia Pacific (ap)
-					Latency                       58ms
-					Web Interface                 http://127.0.0.1:4041
-					Forwarding                    https://classic-man-pumped.ngrok-free.app -> http://localhost:3000
-					Connections                   ttl     opn     rt1     rt5     p50     p90     
-											  0       0       0.00    0.00    0.00    0.00   
  ]
 
 --------------------------------------------------------------------------------------------
@@ -1259,6 +1259,10 @@
 		- rồi cập nhật lại Button trong 'app\(browse)\_components\navbar\actions.tsx'
 			<Button size='sm' variant='primary'>
 				Login
-			</Button>
-		
+			</Button>		
+]
+
+--------------------------------------------------------------------------------------------
+- Sidebar[
+	
 ]
